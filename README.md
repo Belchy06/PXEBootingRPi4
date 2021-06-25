@@ -164,6 +164,10 @@ rm /tmp/pxestuff -r
 ```
 
 # Test the image
-Boot your pi, bobs your uncle, it should boot into normal raspbian lite here.
+On the server, run:
+```
+journalctl -xefu dnsmasq
+```
+to view the output of dnsmasq, plug in your pi and it should boot into raspbian lite.
 
 It may restart more than once, especially between updates, that's normal.
