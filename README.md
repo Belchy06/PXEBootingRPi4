@@ -9,7 +9,7 @@ This guide also uses Raspbian Lite images to boot the client pi. There's no reas
 This guide works for networks where only the server and pi are on the network. For larger networks, you may experience interference from other routers with DHCP enabled. Disable the DHCP feature of these routers and you should be good to go! 
 
 
-# Server Prep
+# Server prep
 This guide uses a Ubuntu 20.04.2LTS virtual machine running on VirtualBox as the server, although you can use the host just fine.
 A virtual disk size of 25GB proves sufficient, I tested 20GB and that was not enough space. Also, ensure that you setup the VM's network adapter to be the `bridged adapter` and choose the name of the adapter you're using in the next dropdown.
 Using a virtual machine ensures a fresh install. If you run into software conflicts, you're on your own.
@@ -19,8 +19,7 @@ First, install the needed programs:
 sudo apt update
 sudo apt install nfs-kernel-server kpartx unzip -y
 ```
-Second, create a few directories for hosting the boot files. These files need to be created from the very root of the files system. This can be achieved by running `cd ../..`. Double check you are in the correct directory by running `ls`, you should see around 19 resultsn with folders such as `bin`, `dev`, `lib`, etc...  
-Create the required directories
+Second, we'll ceate a few directories for hosting the boot files. These files need to be created from the very root of the files system. This can be achieved by running `cd ../..`. Double check you are in the correct directory by running `ls`, you should see around 19 results with folders such as `bin`, `dev`, `lib`, etc... 
 ```
 sudo mkdir /srv/tftpboot
 sudo mkdir /srv/nfs
@@ -50,9 +49,9 @@ and finally restart the `dnsmasq` service:
 sudo systemctl restart dnsmasq
 ```
 
-Next, we'll need to edit the `dnsmasq.conf` file. Start by finding your VM's external IP address with `hostname -I`. In this case my server IP is `10.115.11.182`, any time you see this value make sure to subsitute it with your IP.
-Notice how the first the octets of the `dhcp-range` match that of the server IP:
-`
+Next, we'll need to edit the `dnsmasq.conf` file. Start by finding your VM's external IP address with `hostname -I`. In this case my server IP is `10.115.11.182`. Any time you see this value make sure to subsitute it with your IP.
+Notice how the first three octets of the `dhcp-range` match that of the server IP:
+```
 cat > /etc/dnsmasq.conf << EOF
 dhcp-range=10.115.11.0,10.115.11.254,12h
 log-dhcp
@@ -61,34 +60,30 @@ tftp-root=/srv/tftpboot
 pxe-service=0,"Raspberry Pi Boot"
 dhcp-boot=pxelinux.0,10.115.11.182
 EOF
-`
+```
 and then restart `dnsmasq`:
 ```
 sudo systemctl restart dnsmasq
 ```
 
 # Client prep - readying the client pi for network boot
-Now, we need to get the client pi ready to pxe boot by enabling network booting fallback
-
-but first, we need to make sure the firmware is up to date
-
+Now, we need to get the client pi ready to pxe boot by enabling network booting fallback. But first, we need to make sure the firmware is up to date:
 ```sudo apt update && sudo apt upgrade -y```
 
-then open raspi-config
+Then open raspi-config
 
 ```sudo raspi-config```
 
+Navigate through to and enable
+```
 Advanced Options > Boot Order > Network Boot
-
-before you reboot the client pi, you'll need the mac and serial number for this pi
-
-you'll need this for later, note that the serial should be 8 characters
+```
+Before you reboot the client pi, you'll need the serial number for this pi. You'll need this for later, note that the serial should be 8 characters
 ```
 cat /proc/cpuinfo | grep Serial | awk -F ': ' '{print $2}' | tail -c 9
-ip addr show eth0 | grep ether | awk '{print $2}'
 ```
 
-you can now reboot the pi without an SD card and will bring you to a boot screen that will loop while looking from a PXE server to boot from
+You can now reboot the pi without an SD card and will bring you to a boot screen that will loop while looking from a PXE server to boot from
 ```
 sudo reboot
 ```
@@ -124,11 +119,9 @@ Take note of the value after `map`, you'll need this in the next step. Then:
 mount /dev/mapper/loop5p1 bootmnt/
 mount /dev/mapper/loop5p2 rootmnt/
 ```
-Use the serial and mac address we noted from the client pi along with an arbitrary name for the pi and the IP of Ubuntu VM, initialize some vars for use in the following steps:
+Use the serial number we noted from the client pi along with an arbitrary name for the pi and the IP of Ubuntu VM, initialize some vars for use in the following steps:
 ```
 PI_SERIAL=12345678
-
-PI_MAC=01:23:45:67:89:ab
 
 KICKSTART_IP=10.115.11.182
 
