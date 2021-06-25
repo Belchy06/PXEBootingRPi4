@@ -1,6 +1,6 @@
 # PXEBootingRPi4
 ## Last tested: 25/06/2021
-This guide is based off of: https://www.reddit.com/r/raspberry_pi/comments/l7bzq8/guide_pxe_booting_to_a_raspberry_pi_4/ written by u/Offbeatalchemy, updated with some extra information obtained from the troubles I had following the guid.
+This guide is based off of: https://www.reddit.com/r/raspberry_pi/comments/l7bzq8/guide_pxe_booting_to_a_raspberry_pi_4/ written by u/Offbeatalchemy, updated with some extra information obtained from the troubles I had following the guide.
 
 In this guide, our server will double as both the DHCP and our TFTP server.  
 This guide also uses Raspbian Lite images to boot the client pi. There's no reason any other ARM based Linux distro won't work, I just haven't personally tried them.
