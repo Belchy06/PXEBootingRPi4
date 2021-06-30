@@ -1,0 +1,55 @@
+# Raspberry Pi 3
+[pi3]
+kernel=rpi3-u-boot.bin
+dtoverlay=upstream
+
+# Raspberry Pi 4
+[pi4]
+kernel=rpi4-u-boot.bin
+dtoverlay=upstream-pi4
+
+# Default Fedora configs for all Raspberry Pi Revisions
+[all]
+# Put the RPi into 64 bit mode
+arm_64bit=1
+
+# Enable UART
+# Only enable UART if you're going to use it as it has speed implications
+# Serial console is ttyS0 on RPi3 and ttyAMA0 on all other variants
+# u-boot will auto detect serial and pass corrent options to kernel if enabled
+# Speed details: https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=141195
+
+# Terrible hack to work around U-Boot issues on most devices
+enable_uart=1
+
+# Early boot delay in the hope monitors are initialised enough to provide EDID
+bootcode_delay=1
+
+# We need this to be 32Mb to support VCHI services and drivers which use them
+# but this isn't used by mainline VC4 driver so reduce to lowest supported value
+# You need to set this to at least 80 for using the camera
+gpu_mem=32
+
+# Use eXtended firmware by default
+start_x=1
+
+# Stop the RPi turning on HDMI monitors on reboot
+hdmi_ignore_cec_init=1
+
+# New option to allow the firmware to load upstream dtb
+# Will allow things like camera, touchscreen etc to work OOTB
+upstream_kernel=1
+
+# HAT and DT overlays. Documentation at Raspberry Pi here:
+# https://www.raspberrypi.org/documentation/configuration/device-tree.md
+# Each dtoverlay line is an individual HAT/overlay, multiple lines allowed
+# dtoverlay=rpi-sense
+
+# Other options you can adjust for all Raspberry Pi Revisions
+# https://www.raspberrypi.org/documentation/configuration/config-txt/README.md
+# All options documented at http://elinux.org/RPiconfig
+# for more options see http://elinux.org/RPi_config.txt
+
+# To use this on Fedora you need to use firmware provided device tree, not kernel
+# For this functionality follow the following guide:
+# https://fedoraproject.org/w/index.php?title=Architectures/ARM/Raspberry_Pi/HATs
